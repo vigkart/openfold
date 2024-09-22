@@ -33,3 +33,14 @@ RUN wget -q -P /opt/openfold/openfold/resources \
     https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
 WORKDIR /opt/openfold
 RUN python3 setup.py install
+
+
+# SageMaker-specific modifications
+RUN pip install sagemaker-inference flask
+
+# Copy the OpenFold script and the SageMaker wrapper script
+COPY run_pretrained_openfold.py /opt/openfold/run_pretrained_openfold.py
+COPY sagemaker_wrapper.py /opt/openfold/sagemaker_wrapper.py
+
+# Set up the program that will be run when the container is started
+ENTRYPOINT ["python", "/opt/openfold/sagemaker_wrapper.py"]
